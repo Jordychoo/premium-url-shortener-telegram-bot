@@ -1,0 +1,28 @@
+{
+  "name": "premium-url-shortener-bot",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A premium Telegram URL shortener bot built on Cloudflare Workers.",
+  "cloudflare": {
+    "bindings": {
+      "TELEGRAM_BOT_TOKEN": {
+        "description": "Telegram bot token from BotFather."
+      },
+      "TELEGRAM_WEBHOOK_SECRET": {
+        "description": "A random secret string used to validate incoming Telegram webhook requests."
+      },
+      "BITLY_TOKEN": {
+        "description": "Optional. Required only if Bitly is enabled."
+      },
+      "CUTTLY_API_KEY": {
+        "description": "Optional. Required only if Cuttly is enabled."
+      },
+      "ENABLED_PROVIDERS": {
+        "description": "JSON array or comma-separated list of provider keys to enable."
+      },
+      "LINK_DB": {
+        "description": "D1 database used to store pending link selections between Telegram messages and button clicks."
+      }
+    }
+  }
+}

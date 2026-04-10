@@ -1,0 +1,15 @@
+{
+  "name": "premium-url-shortener-bot",
+  "main": "worker.js",
+  "compatibility_date": "2026-04-10",
+  "d1_databases": [
+    {
+      "binding": "LINK_DB",
+      "database_name": "link-db",
+      "database_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "vars": {
+    "ENABLED_PROVIDERS": "[\"bitly\",\"tinyurl\",\"isgd\",\"vgd\",\"cuttly\",\"cleanuri\",\"shorturlat\"]"
+  }
+}
