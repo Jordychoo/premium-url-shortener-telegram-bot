@@ -11,5 +11,11 @@
   ],
   "vars": {
     "ENABLED_PROVIDERS": "[\"bitly\",\"tinyurl\",\"isgd\",\"vgd\",\"cuttly\",\"cleanuri\",\"shorturlat\"]"
+  },
+  "secrets": {
+    "required": [
+      "TELEGRAM_BOT_TOKEN",
+      "TELEGRAM_WEBHOOK_SECRET"
+    ]
   }
 }
