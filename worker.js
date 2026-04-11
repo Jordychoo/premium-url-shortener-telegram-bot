@@ -12,6 +12,10 @@ export default {
           hasWebhookSecret: !!env.TELEGRAM_WEBHOOK_SECRET,
           hasBitlyToken: !!env.BITLY_TOKEN,
           hasCuttlyKey: !!env.CUTTLY_API_KEY,
+          hasLnkuaKey: !!env.LNKUA_API_KEY,
+          hasTinyccUser: !!env.TINYCC_USER,
+          hasTinyccKey: !!env.TINYCC_API_KEY,
+          hasSpoomeKey: !!env.SPOOME_API_KEY,
           hasD1: !!env.LINK_DB,
         });
       }
@@ -352,9 +356,14 @@ function getEnabledProviders(env) {
     "tinyurl",
     "isgd",
     "vgd",
+    "lnkua",
     "cuttly",
     "cleanuri",
     "shorturlat",
+    "spoome",
+    "tinycc",
+    "tinube",
+    "yasosu",
   ];
   let enabled = defaultList;
 
@@ -466,6 +475,46 @@ function buildProviders(env) {
         }
 
         return text;
+      },
+    },
+    {
+      key: "lnkua",
+      label: "🇺🇦 lnk.ua",
+      shorten: async (longUrl, env) => {
+        if (!env.LNKUA_API_KEY) {
+          throw new Error("LNKUA_API_KEY is not configured.");
+        }
+
+        const form = new FormData();
+        form.append("link", longUrl);
+
+        const response = await fetch("https://lnk.ua/api/v1/link/create", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${env.LNKUA_API_KEY}`,
+          },
+          body: form,
+        });
+
+        const data = await safeJson(response);
+
+        if (!response.ok) {
+          throw new Error(
+            data?.message ||
+              data?.error ||
+              data?.result?.message ||
+              `lnk.ua HTTP ${response.status}`
+          );
+        }
+
+        const shortUrl = data?.result?.lnk;
+
+        if (!shortUrl) {
+          throw new Error("lnk.ua did not return a short link.");
+        }
+
+        return shortUrl;
       },
     },
     {
@@ -620,6 +669,229 @@ function buildProviders(env) {
         }
 
         throw new Error(lastError);
+      },
+    },
+    {
+      key: "spoome",
+      label: "🟣 spoo.me",
+      shorten: async (longUrl, env) => {
+        if (!env.SPOOME_API_KEY) {
+          throw new Error("SPOOME_API_KEY is not configured.");
+        }
+
+        const response = await fetch("https://spoo.me/api/v1/shorten", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${env.SPOOME_API_KEY}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            long_url: longUrl,
+          }),
+        });
+
+        const data = await safeJson(response);
+
+        if (!response.ok) {
+          throw new Error(
+            data?.error?.message ||
+              data?.message ||
+              data?.details ||
+              `spoo.me HTTP ${response.status}`
+          );
+        }
+
+        const shortUrl =
+          data?.short_url ||
+          data?.shortUrl ||
+          data?.url ||
+          data?.link ||
+          data?.data?.short_url ||
+          data?.data?.shortUrl ||
+          data?.data?.url;
+
+        if (!shortUrl) {
+          throw new Error("spoo.me did not return a short link.");
+        }
+
+        return shortUrl;
+      },
+    },
+    {
+      key: "tinycc",
+      label: "🔵 Tiny.cc",
+      shorten: async (longUrl, env) => {
+        if (!env.TINYCC_USER) {
+          throw new Error("TINYCC_USER is not configured.");
+        }
+        if (!env.TINYCC_API_KEY) {
+          throw new Error("TINYCC_API_KEY is not configured.");
+        }
+
+        const basicAuth = btoa(`${env.TINYCC_USER}:${env.TINYCC_API_KEY}`);
+
+        const response = await fetch("https://tiny.cc/tiny/api/3/urls", {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${basicAuth}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            urls: [
+              {
+                long_url: longUrl,
+              },
+            ],
+          }),
+        });
+
+        const data = await safeJson(response);
+
+        if (!response.ok) {
+          throw new Error(
+            data?.error?.message ||
+              data?.error?.details ||
+              `Tiny.cc HTTP ${response.status}`
+          );
+        }
+
+        if (data?.error?.code && data?.error?.code !== 0) {
+          throw new Error(
+            data?.error?.message ||
+              data?.error?.details ||
+              "Tiny.cc returned an API error."
+          );
+        }
+
+        const row = data?.urls?.[0];
+        if (!row) {
+          throw new Error("Tiny.cc did not return a URL payload.");
+        }
+
+        if (row?.error?.code && row?.error?.code !== 0) {
+          throw new Error(
+            row?.error?.message ||
+              row?.error?.details ||
+              "Tiny.cc returned a URL-level error."
+          );
+        }
+
+        const shortUrl =
+          row?.short_url_with_protocol ||
+          row?.short_url ||
+          row?.url;
+
+        if (!shortUrl) {
+          throw new Error("Tiny.cc did not return a short link.");
+        }
+
+        return shortUrl.startsWith("http") ? shortUrl : `https://${shortUrl}`;
+      },
+    },
+    {
+      key: "tinube",
+      label: "🟢 tinu.be",
+      shorten: async (longUrl) => {
+        const payload = JSON.stringify([
+          {
+            longUrl,
+            urlCode: "",
+          },
+        ]);
+
+        const response = await fetch("https://tinu.be/en", {
+          method: "POST",
+          headers: {
+            Accept: "text/x-component",
+            "Content-Type": "text/plain;charset=UTF-8",
+            Origin: "https://tinu.be",
+            Referer: "https://tinu.be/en",
+            "Next-Action": "74b2f223fe2b6e65737e07eeabae72c67abf76b2",
+            "User-Agent": "Mozilla/5.0",
+          },
+          body: payload,
+        });
+
+        const text = await response.text();
+
+        if (!response.ok) {
+          throw new Error(text || `tinu.be HTTP ${response.status}`);
+        }
+
+        let code = null;
+
+        const jsonMatch = text.match(/"urlCode":"([^"]+)"/);
+        if (jsonMatch) {
+          code = jsonMatch[1];
+        }
+
+        if (!code) {
+          try {
+            const lines = text.split("\n");
+            for (const line of lines) {
+              const idx = line.indexOf("{");
+              if (idx !== -1) {
+                const maybe = JSON.parse(line.slice(idx));
+                const maybeCode = maybe?.data?.urlCode;
+                if (maybeCode) {
+                  code = maybeCode;
+                  break;
+                }
+              }
+            }
+          } catch {}
+        }
+
+        if (!code) {
+          throw new Error("tinu.be did not return a short code.");
+        }
+
+        return `https://tinu.be/${code}`;
+      },
+    },
+    {
+      key: "yasosu",
+      label: "🟡 yaso.su",
+      shorten: async (longUrl) => {
+        const response = await fetch("https://api.yaso.su/records", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Origin: "https://yaso.su",
+            Referer: "https://yaso.su/",
+            "User-Agent": "Mozilla/5.0",
+            "Cookie": "yasosu_session=ys-web-8PGCHo7TuvXgRsKW9Td6DKLcv6JTJgdrfcZsqKYxcmWb",
+          },
+          body: JSON.stringify({
+            expirationTime: -1,
+            content: longUrl,
+            captcha: "DO_NOT_USE_WAIT_FOR_PUBLIC_API",
+          }),
+        });
+
+        const data = await safeJson(response);
+
+        if (!response.ok) {
+          throw new Error(
+            data?.message ||
+              data?.error ||
+              data?.details ||
+              `yaso.su HTTP ${response.status}`
+          );
+        }
+
+        if (data?.contentType !== "url") {
+          throw new Error("yaso.su did not return a URL record.");
+        }
+
+        const code = data?.url;
+        if (!code) {
+          throw new Error("yaso.su did not return a short code.");
+        }
+
+        return `https://yaso.su/${code}`;
       },
     },
   ];
