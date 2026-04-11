@@ -10,7 +10,6 @@ A premium Telegram URL shortener bot built on Cloudflare Workers.
 
 Send any valid URL, choose your preferred shortening service, and get a clean, share-ready short link in seconds.
 
-
 ## Try the live bot
 
 Want to test the experience before deploying your own copy?
@@ -37,6 +36,7 @@ Most Telegram link shortener bots feel basic. This one is designed to feel polis
 - D1-backed pending request storage
 - One-click deploy support
 - Easy provider enable/disable configuration
+- Easy to extend with more shortener services
 
 ## Supported providers
 
@@ -44,9 +44,14 @@ Most Telegram link shortener bots feel basic. This one is designed to feel polis
 - TinyURL
 - is.gd
 - v.gd
+- lnk.ua
 - Cuttly
 - CleanURI
-- ShortURL.at (experimental)
+- ShortURL.at *(experimental)*
+- spoo.me
+- Tiny.cc
+- tinu.be *(experimental)*
+- yaso.su *(experimental)*
 
 ## Add more shortener services
 
@@ -54,7 +59,7 @@ This project is designed to be extensible.
 
 If you want, you can add more URL shortener providers by editing the `buildProviders(env)` function in `worker.js`, then adding the new provider key to `ENABLED_PROVIDERS`.
 
-If a provider requires credentials, add them as Cloudflare secrets the same way as `BITLY_TOKEN` or `CUTTLY_API_KEY`.
+If a provider requires credentials, add them as Cloudflare secrets the same way as `BITLY_TOKEN`, `LNKUA_API_KEY`, `SPOOME_API_KEY`, or `TINYCC_API_KEY`.
 
 ## Demo flow
 
@@ -82,6 +87,48 @@ These are only needed if the corresponding provider is enabled:
 
 - `BITLY_TOKEN`
 - `CUTTLY_API_KEY`
+- `LNKUA_API_KEY`
+- `SPOOME_API_KEY`
+- `TINYCC_USER`
+- `TINYCC_API_KEY`
+
+## Important after deployment
+
+You must add the required secrets for the bot to work.
+
+Depending on your Cloudflare deploy flow, Cloudflare may ask for some values during deployment, but you should still verify that the required secrets are actually set after deployment.
+
+At minimum, the bot will not work unless these are present:
+
+- `TELEGRAM_BOT_TOKEN`
+- `TELEGRAM_WEBHOOK_SECRET`
+
+If you enable providers that need credentials, you must also add their matching secrets.
+
+## Provider-specific requirements
+
+Some providers need their own credentials before they can be used.
+
+### Requires credentials
+
+- **Bitly** → `BITLY_TOKEN`
+- **Cuttly** → `CUTTLY_API_KEY`
+- **lnk.ua** → `LNKUA_API_KEY`
+- **spoo.me** → `SPOOME_API_KEY`
+- **Tiny.cc** → `TINYCC_USER` and `TINYCC_API_KEY`
+
+### No extra credentials required
+
+- **TinyURL**
+- **is.gd**
+- **v.gd**
+- **CleanURI**
+
+### Experimental providers
+
+- **ShortURL.at**
+- **tinu.be**
+- **yaso.su**
 
 ## Environment variables
 
@@ -90,13 +137,13 @@ These are only needed if the corresponding provider is enabled:
 Example:
 
 ```json
-["bitly","tinyurl","isgd","vgd","cuttly","cleanuri","shorturlat"]
+["bitly","tinyurl","isgd","vgd","lnkua","cuttly","cleanuri","shorturlat","spoome","tinycc","tinube","yasosu"]
 ```
 
 You can also use a comma-separated string:
 
 ```text
-bitly,tinyurl,isgd,vgd,cuttly,cleanuri,shorturlat
+bitly,tinyurl,isgd,vgd,lnkua,cuttly,cleanuri,shorturlat,spoome,tinycc,tinube,yasosu
 ```
 
 ## D1 binding
@@ -109,7 +156,16 @@ LINK_DB
 
 ## After deployment
 
-### 1. Initialize the D1 table
+### 1. Verify secrets
+
+Before using the bot, confirm that the required secrets are set in Cloudflare:
+
+- `TELEGRAM_BOT_TOKEN`
+- `TELEGRAM_WEBHOOK_SECRET`
+
+Also add any provider-specific secrets for the providers you want enabled.
+
+### 2. Initialize the D1 table
 
 Open this once in your browser:
 
@@ -119,7 +175,7 @@ https://YOUR_WORKER_SUBDOMAIN.workers.dev/init
 
 This is safe to run multiple times.
 
-### 2. Set the Telegram webhook
+### 3. Set the Telegram webhook
 
 Open this URL in your browser, replacing the placeholders:
 
@@ -127,7 +183,7 @@ Open this URL in your browser, replacing the placeholders:
 https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook?url=https://YOUR_WORKER_SUBDOMAIN.workers.dev/webhook&secret_token=<YOUR_TELEGRAM_WEBHOOK_SECRET>
 ```
 
-### 3. Start using the bot
+### 4. Start using the bot
 
 Open Telegram and send:
 
@@ -165,20 +221,24 @@ Control visible providers with `ENABLED_PROVIDERS`.
 Example:
 
 ```json
-["bitly","tinyurl","isgd"]
+["bitly","vgd","lnkua","spoome"]
 ```
 
 This will show only:
 
 - Bitly
-- TinyURL
-- is.gd
+- v.gd
+- lnk.ua
+- spoo.me
 
 ### Notes
 
 - If `bitly` is enabled, `BITLY_TOKEN` must be set
 - If `cuttly` is enabled, `CUTTLY_API_KEY` must be set
-- If you do not want experimental support for ShortURL.at, remove `shorturlat` from `ENABLED_PROVIDERS`
+- If `lnkua` is enabled, `LNKUA_API_KEY` must be set
+- If `spoome` is enabled, `SPOOME_API_KEY` must be set
+- If `tinycc` is enabled, both `TINYCC_USER` and `TINYCC_API_KEY` must be set
+- `shorturlat`, `tinube`, and `yasosu` should be treated as experimental
 
 ## Project structure
 
@@ -199,8 +259,10 @@ You can also run and test the Worker locally with Wrangler if needed, but this t
 
 - `/init` only creates the required D1 table and index if they do not already exist
 - Running `/init` multiple times does not delete or duplicate data
-- ShortURL.at support is experimental and may become unreliable if their public website flow changes
-- v.gd and is.gd may reject some links based on their own validation or abuse rules
+- `shorturlat`, `tinube`, and `yasosu` are experimental providers and may break if their website flow changes
+- `is.gd` and `v.gd` may reject some links based on their own validation or abuse rules
+- `Tiny.cc` requires valid account credentials and API access
+- `spoo.me` requires a valid API key with the correct scope
 
 ## License
 
