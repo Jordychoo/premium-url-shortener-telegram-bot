@@ -451,7 +451,13 @@ function getEnabledProviders(env) {
         "shortenee",
         "clckru",
         "osdb",
-        "ulvis"
+        "ulvis",
+        "xgd",
+        "smartlnks",
+        "ujeb",
+        "ejuz",
+        "uto",
+        "walee"
     ];
     let enabled = defaultList;
 
@@ -531,7 +537,7 @@ function buildProviders(env) {
 
         {
             key: "isgd",
-            label: "🔹 is.gd",
+            label: "🔗 is.gd",
             shorten: async (longUrl) => {
                 const response = await fetch(
                     "https://is.gd/create.php?format=simple&url=" + encodeURIComponent(longUrl)
@@ -678,7 +684,7 @@ function buildProviders(env) {
 
         {
             key: "shorturlat",
-            label: "🟠 ShortURL.at",
+            label: "📎 ShortURL.at",
             shorten: async (longUrl) => {
                 const body = new URLSearchParams({
                     u: longUrl, // IMPORTANT: it's "u", not "url"
@@ -725,7 +731,7 @@ function buildProviders(env) {
 
         {
             key: "spoome",
-            label: "🟣 spoo.me",
+            label: "🪄 spoo.me",
             shorten: async (longUrl, env) => {
                 if (!env.SPOOME_API_KEY) {
                     throw new Error("SPOOME_API_KEY is not configured.");
@@ -765,7 +771,7 @@ function buildProviders(env) {
 
         {
             key: "tinycc",
-            label: "🔵 Tiny.cc",
+            label: "🔹 Tiny.cc",
             shorten: async (longUrl, env) => {
                 if (!env.TINYCC_USER) {
                     throw new Error("TINYCC_USER is not configured.");
@@ -832,7 +838,7 @@ function buildProviders(env) {
 
         {
             key: "tinube",
-            label: "🟢 tinu.be",
+            label: "🐝 tinu.be",
             shorten: async (longUrl) => {
                 const payload = JSON.stringify([{ longUrl, urlCode: "" }]);
 
@@ -868,7 +874,7 @@ function buildProviders(env) {
 
         {
             key: "yasosu",
-            label: "🟡 yaso.su",
+            label: "🪄 yaso.su",
             shorten: async (longUrl) => {
                 const response = await fetch("https://api.yaso.su/records", {
                     method: "POST",
@@ -908,7 +914,7 @@ function buildProviders(env) {
 
         {
             key: "goosu",
-            label: "🟤 Goo.su",
+            label: "💧 Goo.su",
             shorten: async (longUrl, env) => {
                 if (!env.GOOSU_API_TOKEN) {
                     throw new Error("GOOSU_API_TOKEN is not configured.");
@@ -954,7 +960,7 @@ function buildProviders(env) {
 
         {
             key: "urliinfo",
-            label: "🟠 urli.info",
+            label: "🔗 urli.info",
             shorten: async (longUrl) => {
                 const response = await fetch("https://urli.info/", {
                     method: "POST",
@@ -990,7 +996,7 @@ function buildProviders(env) {
 
         {
             key: "scnst",
-            label: "⚫ scn.st",
+            label: "📡 scn.st",
             shorten: async (longUrl) => {
                 const response = await fetch("https://scn.st/api/link/create", {
                     method: "POST",
@@ -1024,7 +1030,7 @@ function buildProviders(env) {
 
         {
             key: "shortlinkme",
-            label: "🟣 short-link.me",
+            label: "🔗 short-link.me",
             shorten: async (longUrl) => {
                 const response = await fetch("https://short-link.me/", {
                     method: "POST",
@@ -1097,7 +1103,7 @@ function buildProviders(env) {
 
         {
             key: "n9cl",
-            label: "🟢 n9.cl",
+            label: "🧩 n9.cl",
             shorten: async (longUrl) => {
                 const body = new URLSearchParams({
                     xjxfun: "create",
@@ -1171,7 +1177,7 @@ function buildProviders(env) {
 
         {
             key: "comeac",
-            label: "🔵 come.ac",
+            label: "🚪 come.ac",
             shorten: async (longUrl) => {
                 const response = await fetch("https://come.ac/page/shorten-url", {
                     method: "POST",
@@ -1205,7 +1211,7 @@ function buildProviders(env) {
 
         {
             key: "shorterme",
-            label: "🟣 Shorter.me",
+            label: "📏 Shorter.me",
             shorten: async (longUrl) => {
                 const response = await fetch("https://shorter.me/page/shorten", {
                     method: "POST",
@@ -1240,7 +1246,7 @@ function buildProviders(env) {
 
         {
             key: "reurlcc",
-            label: "🔗 Reurl.cc",
+            label: "🔁 Reurl.cc",
             shorten: async (longUrl, env) => {
                 if (!env.REURLCC_API_KEY) {
                     throw new Error("REURLCC_API_KEY is not configured.");
@@ -1272,7 +1278,7 @@ function buildProviders(env) {
 
         {
             key: "picsee",
-            label: "✨ PicSee",
+            label: "🖼️ PicSee",
             shorten: async (longUrl, env) => {
                 if (!env.PICSEE_ACCESS_TOKEN) {
                     throw new Error("PICSEE_ACCESS_TOKEN is not configured.");
@@ -1305,7 +1311,7 @@ function buildProviders(env) {
 
         {
             key: "linklyhq",
-            label: "🔗 LinklyHQ",
+            label: "🧷 LinklyHQ",
             shorten: async (longUrl, env) => {
                 if (!env.LINKLYHQ_API_KEY) {
                     throw new Error("LINKLYHQ_API_KEY is not configured.");
@@ -1344,90 +1350,64 @@ function buildProviders(env) {
         },
 
         {
-            key: "shortenworldapi",
-            label: "🌍 ShortenWorld",
+            key: "shortentv",
+            label: "📺 shorten.tv",
+            shorten: (longUrl, env) =>
+                shortenWorld(longUrl, env, "634cc5efef3e000065005374"),
+        },
 
-            shorten: async (longUrl, env) => {
-                const API_BASE = "https://api.shortenworld.com/v1";
+        {
+            key: "lnrun",
+            label: "🏃 ln.run",
+            shorten: (longUrl, env) =>
+                shortenWorld(longUrl, env, "63281bec3d2b0000ee0018c1"),
+        },
 
-                const USERNAME = env.SHORTENWORLD_USERNAME;
-                const API_KEY = env.SHORTENWORLD_API_KEY;
-                const TEAM_ID = env.SHORTENWORLD_TEAM_ID;
-                const DOMAIN_ID = env.SHORTENWORLD_DOMAIN_ID;
+        {
+            key: "shortenso",
+            label: "✂️ shorten.so",
+            shorten: (longUrl, env) =>
+                shortenWorld(longUrl, env, "634cc5f4ef3e000065005375"),
+        },
 
-                if (!USERNAME || !API_KEY) {
-                    throw new Error("Missing ShortenWorld credentials.");
-                }
+        {
+            key: "shortenis",
+            label: "✂️ shorten.is",
+            shorten: (longUrl, env) =>
+                shortenWorld(longUrl, env, "634cc5dbef3e000065005372"),
+        },
 
-                if (!TEAM_ID || !DOMAIN_ID) {
-                    throw new Error("Missing TEAM_ID or DOMAIN_ID.");
-                }
+        {
+            key: "shortenee",
+            label: "✂️ shorten.ee",
+            shorten: (longUrl, env) =>
+                shortenWorld(longUrl, env, "634cc5e7ef3e000065005373"),
+        },
 
-                // ✅ validate URL (IMPORTANT)
-                try {
-                    new URL(longUrl);
-                } catch {
-                    throw new Error("Invalid URL format.");
-                }
+        {
+            key: "shortenworld",
+            label: "🌍 shorten.world",
+            shorten: (longUrl, env) =>
+                shortenWorld(longUrl, env, "63281bec3d2b0000ee0018c2"),
+        },
 
-                // ---- AUTH ----
-                const authRes = await fetch(`${API_BASE}/authen/token`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        username: USERNAME,
-                        key: API_KEY,
-                    }),
-                });
+        {
+            key: "swrun",
+            label: "🏃 sw.run",
+            shorten: (longUrl, env) =>
+                shortenWorld(longUrl, env, "63281bec3d2b0000ee0018c5"),
+        },
 
-                const authData = await authRes.json();
-
-                if (!authRes.ok) {
-                    throw new Error(authData?.message || `Auth failed (${authRes.status})`);
-                }
-
-                const accessToken = authData?.token?.access_token;
-
-                if (!accessToken) {
-                    throw new Error("Missing access token.");
-                }
-
-                // ---- SHORTEN ----
-                const res = await fetch(`${API_BASE}/entity/link/create`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                    body: JSON.stringify({
-                        teamId: TEAM_ID,
-                        domainId: DOMAIN_ID,
-                        campaignId: "",
-                        noTitle: false,
-                        destination: longUrl,
-                    }),
-                });
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    throw new Error(data?.status?.message || data?.message || `HTTP ${res.status}`);
-                }
-
-                // ✅ correct field from real API response
-                const shortUrl = data?.linkShort;
-
-                if (!shortUrl) {
-                    throw new Error("No short URL returned from API.");
-                }
-
-                return shortUrl;
-            },
+        {
+            key: "shortenas",
+            label: "✂️ shorten.as",
+            shorten: (longUrl, env) =>
+                shortenWorld(longUrl, env, "63281bec3d2b0000ee0018c8"),
         },
 
         {
             key: "centi",
-            label: "🔵 centi.ai",
+            label: "🤖 centi.ai",
             shorten: async (longUrl) => {
                 const response = await fetch("https://centi.ai/page/shorten-url", {
                     method: "POST",
@@ -1461,7 +1441,7 @@ function buildProviders(env) {
 
         {
             key: "shortens",
-            label: "🟣 shortens.org",
+            label: "✂️ shortens.org",
             shorten: async (longUrl) => {
                 const response = await fetch("https://shortens.org/page/shorten-url", {
                     method: "POST",
@@ -1494,246 +1474,8 @@ function buildProviders(env) {
         },
 
         {
-            key: "shortenworld",
-            label: "🌐 shorten.world",
-            shorten: async (longUrl) => {
-                const response = await fetch("https://shorten.world/page/shorten-url", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                        "X-Requested-With": "XMLHttpRequest",
-                        Origin: "https://shorten.world",
-                        Referer: "https://shorten.world/",
-                    },
-                    body: new URLSearchParams({ url: longUrl }),
-                });
-
-                const data = await safeJson(response);
-
-                if (!response.ok || data?.code !== 0) {
-                    throw new Error(
-                        data?.message ||
-                        `shorten.world HTTP ${response.status}`
-                    );
-                }
-
-                const shortUrl = data?.data;
-
-                if (!shortUrl || !isLikelyUrl(shortUrl)) {
-                    throw new Error("shorten.world did not return a valid short link.");
-                }
-
-                return shortUrl;
-            },
-        },
-
-        {
-            key: "swrun",
-            label: "⚡ sw.run",
-            shorten: async (longUrl) => {
-                const response = await fetch("https://sw.run/page/shorten-url", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                        "X-Requested-With": "XMLHttpRequest",
-                        Origin: "https://sw.run",
-                        Referer: "https://sw.run/",
-                    },
-                    body: new URLSearchParams({ url: longUrl }),
-                });
-
-                const data = await safeJson(response);
-
-                if (!response.ok || data?.code !== 0) {
-                    throw new Error(
-                        data?.message ||
-                        `sw.run HTTP ${response.status}`
-                    );
-                }
-
-                const shortUrl = data?.data;
-
-                if (!shortUrl || !isLikelyUrl(shortUrl)) {
-                    throw new Error("sw.run did not return a valid short link.");
-                }
-
-                return shortUrl;
-            },
-        },
-
-        {
-            key: "shortenas",
-            label: "🟡 shorten.as",
-            shorten: async (longUrl) => {
-                const response = await fetch("https://shorten.as/page/shorten-url", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                        "X-Requested-With": "XMLHttpRequest",
-                        Origin: "https://shorten.as",
-                        Referer: "https://shorten.as/",
-                    },
-                    body: new URLSearchParams({ url: longUrl }),
-                });
-
-                const data = await safeJson(response);
-
-                if (!response.ok || data?.code !== 0) {
-                    throw new Error(
-                        data?.message ||
-                        `shorten.as HTTP ${response.status}`
-                    );
-                }
-
-                const shortUrl = data?.data;
-
-                if (!shortUrl || !isLikelyUrl(shortUrl)) {
-                    throw new Error("shorten.as did not return a valid short link.");
-                }
-
-                return shortUrl;
-            },
-        },
-
-        {
-            key: "shortenis",
-            label: "⚫ shorten.is",
-            shorten: async (longUrl) => {
-                const response = await fetch("https://shorten.is/page/shorten", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                        "X-Requested-With": "XMLHttpRequest",
-                        Origin: "https://shorten.is",
-                        Referer: "https://shorten.is/",
-                    },
-                    body: new URLSearchParams({ url: longUrl }),
-                });
-
-                const data = await safeJson(response);
-
-                if (!response.ok || data?.code !== 0) {
-                    throw new Error(
-                        data?.message ||
-                        `shorten.is HTTP ${response.status}`
-                    );
-                }
-
-                const shortUrl = data?.data;
-
-                if (!shortUrl || !isLikelyUrl(shortUrl)) {
-                    throw new Error("shorten.is did not return a valid short link.");
-                }
-
-                return shortUrl;
-            },
-        },
-
-        {
-            key: "shortentv",
-            label: "📺 shorten.tv",
-            shorten: async (longUrl) => {
-                const response = await fetch("https://shorten.tv/page/shorten", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                        "X-Requested-With": "XMLHttpRequest",
-                        Origin: "https://shorten.tv",
-                        Referer: "https://shorten.tv/",
-                    },
-                    body: new URLSearchParams({ url: longUrl }),
-                });
-
-                const data = await safeJson(response);
-
-                if (!response.ok || data?.code !== 0) {
-                    throw new Error(
-                        data?.message ||
-                        `shorten.tv HTTP ${response.status}`
-                    );
-                }
-
-                const shortUrl = data?.data;
-
-                if (!shortUrl || !isLikelyUrl(shortUrl)) {
-                    throw new Error("shorten.tv did not return a valid short link.");
-                }
-
-                return shortUrl;
-            },
-        },
-
-        {
-            key: "shortenso",
-            label: "🟠 shorten.so",
-            shorten: async (longUrl) => {
-                const response = await fetch("https://shorten.so/page/shorten", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                        "X-Requested-With": "XMLHttpRequest",
-                        Origin: "https://shorten.so",
-                        Referer: "https://shorten.so/",
-                    },
-                    body: new URLSearchParams({ url: longUrl }),
-                });
-
-                const data = await safeJson(response);
-
-                if (!response.ok || data?.code !== 0) {
-                    throw new Error(
-                        data?.message ||
-                        `shorten.so HTTP ${response.status}`
-                    );
-                }
-
-                const shortUrl = data?.data;
-
-                if (!shortUrl || !isLikelyUrl(shortUrl)) {
-                    throw new Error("shorten.so did not return a valid short link.");
-                }
-
-                return shortUrl;
-            },
-        },
-
-        {
-            key: "shortenee",
-            label: "🟢 shorten.ee",
-            shorten: async (longUrl) => {
-                const response = await fetch("https://shorten.ee/page/shorten", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                        "X-Requested-With": "XMLHttpRequest",
-                        Origin: "https://shorten.ee",
-                        Referer: "https://shorten.ee/",
-                    },
-                    body: new URLSearchParams({ url: longUrl }),
-                });
-
-                const data = await safeJson(response);
-
-                if (!response.ok || data?.code !== 0) {
-                    throw new Error(
-                        data?.message ||
-                        `shorten.ee HTTP ${response.status}`
-                    );
-                }
-
-                const shortUrl = data?.data;
-
-                if (!shortUrl || !isLikelyUrl(shortUrl)) {
-                    throw new Error("shorten.ee did not return a valid short link.");
-                }
-
-                return shortUrl;
-            },
-        },
-
-        {
             key: "clckru",
-            label: "🟣 clck.ru",
+            label: "🖱️ clck.ru",
             shorten: async (longUrl) => {
                 const response = await fetch(
                     "https://clck.ru/--?url=" + encodeURIComponent(longUrl)
@@ -1751,7 +1493,7 @@ function buildProviders(env) {
 
         {
             key: "osdb",
-            label: "🟢 osdb.link",
+            label: "💾 osdb.link",
             shorten: async (longUrl) => {
                 const response = await fetch("https://osdb.link/", {
                     method: "POST",
@@ -1779,7 +1521,7 @@ function buildProviders(env) {
 
         {
             key: "ulvis",
-            label: "🟢 Ulvis",
+            label: "🦊 Ulvis",
             shorten: async (longUrl) => {
                 const response = await fetch(
                     "https://ulvis.net/API/write/get?url=" + encodeURIComponent(longUrl)
@@ -1803,7 +1545,285 @@ function buildProviders(env) {
                 return shortUrl;
             },
         },
+
+        {
+            key: "xgd",
+            label: "❌ X.gd",
+            shorten: async (longUrl, env) => {
+                if (!env.XGD_API_KEY) {
+                    throw new Error("XGD_API_KEY is not configured.");
+                }
+
+                const params = new URLSearchParams({
+                    url: longUrl,
+                    key: env.XGD_API_KEY,
+                    analytics: "false",
+                    filterbots: "false",
+                });
+
+                const response = await fetch(
+                    "https://xgd.io/V1/shorten?" + params
+                );
+
+                const data = await safeJson(response);
+
+                if (!response.ok || (data?.status && data.status !== 200)) {
+                    throw new Error(
+                        data?.message ||
+                        `X.gd HTTP ${response.status}`
+                    );
+                }
+
+                const shortUrl = data?.shorturl;
+
+                if (!shortUrl || !isLikelyUrl(shortUrl)) {
+                    throw new Error("X.gd did not return a valid short link.");
+                }
+
+                return shortUrl;
+            },
+        },
+
+        {
+            key: "smartlnks",
+            label: "🧠 Smartlnks",
+            shorten: async (longUrl) => {
+                const response = await fetch("https://api.smartlnks.co/v1/link/create/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: "Token",
+                    },
+                    body: JSON.stringify({
+                        destination_url: longUrl,
+                        domain: "smartlnks.com",
+                    }),
+                });
+
+                const data = await safeJson(response);
+
+                if (!response.ok || data?.status !== "success") {
+                    throw new Error(
+                        data?.message ||
+                        data?.data?.message ||
+                        `Smartlnks HTTP ${response.status}`
+                    );
+                }
+
+                const shortUrl = data?.data?.link;
+
+                if (!shortUrl || !isLikelyUrl(shortUrl)) {
+                    throw new Error("Smartlnks did not return a valid short link.");
+                }
+
+                return shortUrl;
+            },
+        },
+
+        {
+            key: "ujeb",
+            label: "🪝 Ujeb.link",
+            shorten: async (longUrl) => {
+                for (let i = 0; i < 3; i++) {
+                    const alias = crypto.randomUUID().replace(/-/g, "").slice(0, 6);
+
+                    const response = await fetch("https://ujeb.link/ujeb", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                        body: new URLSearchParams({
+                            long: longUrl,
+                            short: alias,
+                        }),
+                    });
+
+                    if (!response.ok) continue;
+
+                    const shortUrl = `https://ujeb.link/${alias}`;
+                    const check = await fetch(shortUrl, {
+                        method: "HEAD",
+                        redirect: "manual",
+                    });
+
+                    if (check.status >= 300 && check.status < 400) {
+                        return shortUrl;
+                    }
+                }
+
+                throw new Error("Ujeb.link failed to create a short link.");
+            },
+        },
+
+        {
+            key: "ejuz",
+            label: "⚡ ej.uz",
+            shorten: async (longUrl) => {
+                const response = await fetch("https://ej.uz/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        url: longUrl,
+                    }),
+                });
+
+                const data = await safeJson(response);
+
+                if (!response.ok || data?.error) {
+                    throw new Error(
+                        data?.message || `ej.uz HTTP ${response.status}`
+                    );
+                }
+
+                const shortUrl = data?.result?.shortUrl;
+
+                if (!shortUrl || !isLikelyUrl(shortUrl)) {
+                    throw new Error("ej.uz did not return a valid short link.");
+                }
+
+                return shortUrl;
+            },
+        },
+
+        {
+            key: "uto",
+            label: "🛣️ U.to",
+            shorten: async (longUrl) => {
+                const response = await fetch("https://u.to/api/shorten/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        url: longUrl,
+                    }),
+                });
+
+                const data = await safeJson(response);
+
+                if (!response.ok || !data?.success) {
+                    throw new Error(
+                        data?.message || `U.to HTTP ${response.status}`
+                    );
+                }
+
+                const shortUrl = data?.shortUrl;
+
+                if (!shortUrl || !isLikelyUrl(shortUrl)) {
+                    throw new Error("U.to did not return a valid short link.");
+                }
+
+                return shortUrl;
+            },
+        },
+
+        {
+            key: "walee",
+            label: "🐋 wal.ee",
+            shorten: async (longUrl) => {
+                const response = await fetch("https://wal.ee/proxy.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({
+                        url: longUrl,
+                    }),
+                });
+
+                const data = await safeJson(response);
+
+                if (!response.ok || data?.status !== "success") {
+                    throw new Error(
+                        data?.message || `wal.ee HTTP ${response.status}`
+                    );
+                }
+
+                const shortUrl = data?.shorturl;
+
+                if (!shortUrl || !isLikelyUrl(shortUrl)) {
+                    throw new Error("wal.ee did not return a valid short link.");
+                }
+
+                return shortUrl;
+            },
+        }
     ];
+}
+
+async function shortenWorld(longUrl, env, domainId) {
+    const API_BASE = "https://api.shortenworld.com/v1";
+    const { SHORTENWORLD_USERNAME: username, SHORTENWORLD_API_KEY: apiKey, SHORTENWORLD_TEAM_ID: teamId } = env;
+
+    if (!username || !apiKey || !teamId || !domainId) {
+        throw new Error("Missing ShortenWorld credentials or IDs.");
+    }
+
+    try {
+        new URL(longUrl);
+    } catch {
+        throw new Error("Invalid URL format.");
+    }
+
+    const authRes = await fetch(`${API_BASE}/authen/token`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            username,
+            key: apiKey,
+        }),
+    });
+
+    const authData = await safeJson(authRes);
+
+    if (!authRes.ok) {
+        throw new Error(
+            authData?.message || `ShortenWorld auth HTTP ${authRes.status}`
+        );
+    }
+
+    const token = authData?.token?.access_token;
+
+    if (!token) {
+        throw new Error("ShortenWorld did not return an access token.");
+    }
+
+    const response = await fetch(`${API_BASE}/entity/link/create`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+            teamId,
+            domainId,
+            campaignId: "",
+            noTitle: false,
+            destination: longUrl,
+        }),
+    });
+
+    const data = await safeJson(response);
+
+    if (!response.ok) {
+        throw new Error(
+            data?.status?.message ||
+            data?.message ||
+            `ShortenWorld HTTP ${response.status}`
+        );
+    }
+
+    const shortUrl = data?.linkShort;
+
+    if (!shortUrl || !isLikelyUrl(shortUrl)) {
+        throw new Error("ShortenWorld did not return a valid short link.");
+    }
+
+    return shortUrl;
 }
 
 async function telegram(env, method, payload) {
