@@ -21,6 +21,7 @@ export default {
                     hasPicseeToken: !!env.PICSEE_ACCESS_TOKEN,
                     hasLinklyhqKey: !!env.LINKLYHQ_API_KEY,
                     hasShortenworldKey: !!env.SHORTENWORLD_API_KEY,
+                    hasXgdKey: !!env.XGD_API_KEY,
                     hasD1: !!env.LINK_DB,
                 });
             }
@@ -439,16 +440,16 @@ function getEnabledProviders(env) {
         "reurlcc",
         "picsee",
         "linklyhq",
-        "shortenworldapi",
-        "centi",
-        "shortens",
+        "shortentv",
+        "lnrun",
+        "shortenso",
+        "shortenis",
+        "shortenee",
         "shortenworld",
         "swrun",
         "shortenas",
-        "shortenis",
-        "shortentv",
-        "shortenso",
-        "shortenee",
+        "centi",
+        "shortens",
         "clckru",
         "osdb",
         "ulvis",
@@ -1105,11 +1106,17 @@ function buildProviders(env) {
             key: "n9cl",
             label: "🧩 n9.cl",
             shorten: async (longUrl) => {
-                const body = new URLSearchParams({
-                    xjxfun: "create",
-                    xjxr: Date.now().toString(),
-                    "xjxargs[]": `S<![CDATA[${longUrl}]]>`,
-                });
+                const body = new URLSearchParams();
+
+                body.append("xjxfun", "create");
+                body.append("xjxr", Date.now().toString());
+                body.append("xjxargs[]", `S<![CDATA[${longUrl}]]>`);
+                body.append("xjxargs[]", "N1");
+                body.append("xjxargs[]", "S");
+                body.append("xjxargs[]", "S");
+                body.append("xjxargs[]", "N0");
+                body.append("xjxargs[]", "S");
+                body.append("xjxargs[]", "Bfalse");
 
                 const response = await fetch("https://n9.cl/", {
                     method: "POST",
@@ -1120,7 +1127,7 @@ function buildProviders(env) {
                         Referer: "https://n9.cl/",
                         "User-Agent": "Mozilla/5.0",
                     },
-                    body,
+                    body: body.toString(),
                 });
 
                 const text = await response.text();
@@ -1130,7 +1137,7 @@ function buildProviders(env) {
                 }
 
                 const match = text.match(
-                    /window\.location\s*=\s*"https:\/\/n9\.cl\/[a-z]{2}\/r\/([A-Za-z0-9]+)"/i
+                    /https:\/\/n9\.cl\/[a-z]{2}\/r\/([A-Za-z0-9]+)/i
                 );
 
                 if (!match?.[1]) {
